@@ -1,0 +1,52 @@
+# Systemd unit file for feedwriter script
+
+# INSTALL:
+# sudo ln -s /home/pi/smart_plug_websocket_reader.git/services/websocket_reader.service /etc/systemd/system
+
+# RUN AT STARTUP
+# sudo systemctl enable websocket_reader.service
+
+# START / STOP With:
+# sudo systemctl start websocket_reader
+# sudo systemctl stop websocket_reader
+
+# VIEW STATUS / LOG
+# If Using Syslog:
+# sudo systemctl status websocket_reader -n50
+# where -nX is the number of log lines to view 
+# sudo journalctl -f -u websocket_reader
+# Otherwise:
+# Specify
+#StandardOutput=file:/var/log/websocket_reader.log
+# tail -f /var/log/websocket_reader.log
+
+[Unit]
+Description=Websocket reader for the Smart Plug (Tiago Serrano's Smart Plug)
+Wants=feedwriter.service
+After=feedwriter.service
+
+# Uncomment this line to use a dedicated log file for StdOut and StdErr.
+# NOTE: only works in systemd v236+
+#       Debain "stretch" includes v232, "buster" includes v239
+#StandardOutput=file:/var/log/websocket_reader.log
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 -u websocket_reader.py "ws://smartplug001F35.local" "Tiago's Bed Room"
+WorkingDirectory=/home/pi/websocket
+
+# Setup log folder if it does not exist
+# To be loaded from EnvironmentFile in future
+Environment='LOG_PATH=/var/log/emoncms'
+PermissionsStartOnly=true
+
+# Restart script if stopped on a failure. Will not restart if not configured correctly
+Restart=always
+
+# Tag things in the log
+# If you want to use the journal instead of the file above, uncomment SyslogIdentifier below
+# View with: sudo journalctl -f -u feedwriter -o cat
+SyslogIdentifier=websocket_reader
+
+[Install]
+WantedBy=multi-user.target
