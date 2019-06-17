@@ -1,7 +1,7 @@
 # Systemd unit file for feedwriter script
 
 # INSTALL:
-# sudo ln -s /home/pi/smart_plug_websocket_reader.git/services/websocket_reader.service /etc/systemd/system
+# sudo ln -s /home/pi/smart_plug_websocket_reader/services/websocket_reader.service /etc/systemd/system
 
 # RUN AT STARTUP
 # sudo systemctl enable websocket_reader.service
@@ -32,8 +32,9 @@ After=feedwriter.service
 
 [Service]
 Type=idle
-ExecStart=/usr/bin/python3 -u websocket_reader.py "ws://smartplug001F35.local" "Tiago's Bed Room"
-WorkingDirectory=/home/pi/websocket
+WorkingDirectory=/home/pi/
+User=pi
+ExecStart=/usr/bin/python3 -u /home/pi/smart_plug_websocket_reader/websocketreader.py "ws://smartplug001F35.local" "teste"
 
 # Setup log folder if it does not exist
 # To be loaded from EnvironmentFile in future
