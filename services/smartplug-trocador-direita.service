@@ -1,24 +1,24 @@
 # Systemd unit file for feedwriter script
 
 # INSTALL:
-# sudo ln -s /home/pi/smart_plug_websocket_reader/services/websocket_reader.service /etc/systemd/system
+# sudo ln -s /home/pi/smart_plug_websocket_reader/services/smartplug-trocador-direita.service /etc/systemd/system
 
 # RUN AT STARTUP
-# sudo systemctl enable websocket_reader.service
+# sudo systemctl enable smartplug-trocador-direita.service
 
 # START / STOP With:
-# sudo systemctl start websocket_reader
-# sudo systemctl stop websocket_reader
+# sudo systemctl start smartplug-trocador-direita
+# sudo systemctl stop smartplug-trocador-direita
 
 # VIEW STATUS / LOG
 # If Using Syslog:
-# sudo systemctl status websocket_reader -n50
+# sudo systemctl status smartplug-trocador-direita -n50
 # where -nX is the number of log lines to view 
-# sudo journalctl -f -u websocket_reader
+# sudo journalctl -f -u smartplug-trocador-direita
 # Otherwise:
 # Specify
-#StandardOutput=file:/var/log/websocket_reader.log
-# tail -f /var/log/websocket_reader.log
+#StandardOutput=file:/var/log/smartplug-trocador-direita.log
+# tail -f /var/log/smartplug-trocador-direita.log
 
 [Unit]
 Description=Websocket reader for the Smart Plug (Tiago Serrano's Smart Plug)
@@ -28,13 +28,13 @@ After=feedwriter.service
 # Uncomment this line to use a dedicated log file for StdOut and StdErr.
 # NOTE: only works in systemd v236+
 #       Debain "stretch" includes v232, "buster" includes v239
-#StandardOutput=file:/var/log/websocket_reader.log
+#StandardOutput=file:/var/log/smartplug-trocador-direita.log
 
 [Service]
 Type=idle
 WorkingDirectory=/home/pi/
 User=pi
-ExecStart=/usr/bin/python3 -u /home/pi/smart_plug_websocket_reader/websocketreader.py "ws://smartplug001F35.local" "teste"
+ExecStart=/usr/bin/python3 -u /home/pi/smart_plug_websocket_reader/websocketreader.py "ws://smartplug000000.local" "Trocador-Direita" "2a47b32ebfab41e5a17127c9cf2ac61f"
 
 # Setup log folder if it does not exist
 # To be loaded from EnvironmentFile in future
@@ -47,7 +47,7 @@ Restart=always
 # Tag things in the log
 # If you want to use the journal instead of the file above, uncomment SyslogIdentifier below
 # View with: sudo journalctl -f -u feedwriter -o cat
-SyslogIdentifier=websocket_reader
+SyslogIdentifier=smartplug-trocador-direita
 
 [Install]
 WantedBy=multi-user.target

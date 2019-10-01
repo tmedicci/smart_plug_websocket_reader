@@ -1,0 +1,53 @@
+# Systemd unit file for feedwriter script
+
+# INSTALL:
+# sudo ln -s /home/pi/smart_plug_websocket_reader/services/smartplug-trocador-esquerda.service /etc/systemd/system
+
+# RUN AT STARTUP
+# sudo systemctl enable smartplug-trocador-esquerda.service
+
+# START / STOP With:
+# sudo systemctl start smartplug-trocador-esquerda
+# sudo systemctl stop smartplug-trocador-esquerda
+
+# VIEW STATUS / LOG
+# If Using Syslog:
+# sudo systemctl status smartplug-trocador-esquerda -n50
+# where -nX is the number of log lines to view 
+# sudo journalctl -f -u smartplug-trocador-esquerda
+# Otherwise:
+# Specify
+#StandardOutput=file:/var/log/smartplug-trocador-esquerda.log
+# tail -f /var/log/smartplug-trocador-esquerda.log
+
+[Unit]
+Description=Websocket reader for the Smart Plug (Tiago Serrano's Smart Plug)
+Wants=feedwriter.service
+After=feedwriter.service
+
+# Uncomment this line to use a dedicated log file for StdOut and StdErr.
+# NOTE: only works in systemd v236+
+#       Debain "stretch" includes v232, "buster" includes v239
+#StandardOutput=file:/var/log/smartplug-trocador-esquerda.log
+
+[Service]
+Type=idle
+WorkingDirectory=/home/pi/
+User=pi
+ExecStart=/usr/bin/python3 -u /home/pi/smart_plug_websocket_reader/websocketreader.py "ws://smartplug00079d.local" "Trocador-Esquerda" "2a47b32ebfab41e5a17127c9cf2ac61f"
+
+# Setup log folder if it does not exist
+# To be loaded from EnvironmentFile in future
+Environment='LOG_PATH=/var/log/emoncms'
+PermissionsStartOnly=true
+
+# Restart script if stopped on a failure. Will not restart if not configured correctly
+Restart=always
+
+# Tag things in the log
+# If you want to use the journal instead of the file above, uncomment SyslogIdentifier below
+# View with: sudo journalctl -f -u feedwriter -o cat
+SyslogIdentifier=smartplug-trocador-esquerda
+
+[Install]
+WantedBy=multi-user.target

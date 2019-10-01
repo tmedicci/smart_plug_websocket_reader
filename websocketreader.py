@@ -49,7 +49,7 @@ def on_message(ws, message):
             logger.debug("pot. ativa: " + str(int(item['potenciaAtiva'])/100))
             logger.debug("pot. reativa: " + str(int(item['potenciaReativa'])/100))
             logger.debug("tensão: " + str(int(item['tensao'])/100))
-            params = urllib.parse.urlencode({'time': item['timestampUtc'], 'node': 'smartplug', 'apikey': 'e3dec5eab2a923157553e9b8f90711d6','data': str(item)})
+            params = urllib.parse.urlencode({'time': item['timestampUtc'], 'node': 'smartplug-' + str(localTomada), 'apikey': str(apiKey),'data': str(item)})
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
             conn = http.client.HTTPConnection("rtsf-router.local", 80)
             conn.request("POST", "/emoncms/input/post/", params, headers)
@@ -70,11 +70,12 @@ if __name__ == "__main__":
     websocket.enableTrace(False)
     setup_logging()
     logger = logging.getLogger(__name__)
-    if len(sys.argv) < 3:
-        logger.error("Uso incorreto. Insira os parametros de entrada: \"<webinterfaceUrl> <nome_do_local>\"")
+    if len(sys.argv) < 4:
+        logger.error("Uso incorreto. Insira os parametros de entrada: \"<webinterfaceUrl> <nome_do_local> <api_write_key-emoncms>\"")
     else:
         host = sys.argv[1]
         localTomada = sys.argv[2]
+        apiKey = sys.argv[3]
         try:
             while True:
                 ws = websocket.WebSocketApp(host,
