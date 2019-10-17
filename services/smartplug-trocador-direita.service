@@ -34,7 +34,7 @@ After=feedwriter.service
 Type=idle
 WorkingDirectory=/home/pi/
 User=pi
-ExecStart=/usr/bin/python3 -u /home/pi/smart_plug_websocket_reader/websocketreader.py "ws://smartplug000000.local" "Trocador-Direita" "2a47b32ebfab41e5a17127c9cf2ac61f"
+ExecStart=/usr/bin/python3 -u /home/pi/smart_plug_websocket_reader/websocketreader.py "ws://smartplug0007A5.local" "Trocador-Direita" "2a47b32ebfab41e5a17127c9cf2ac61f"
 
 # Setup log folder if it does not exist
 # To be loaded from EnvironmentFile in future
