@@ -15,6 +15,23 @@ import http.client
 import urllib.parse
 import logging.config
 from collections import Counter
+from functools import singledispatch
+
+@singledispatch
+def json_strip(obj):
+    return obj
+
+@json_strip.register(str)
+def _(obj):
+    return obj.strip()
+
+@json_strip.register(list)
+def _(obj):
+    return [json_strip(v) for v in obj]
+
+@json_strip.register(dict)
+def _(obj):
+    return {json_strip(k): json_strip(v) for k, v in obj.items()}
 
 def setup_logging(
     default_path="somewhere",
@@ -45,27 +62,24 @@ def on_message(ws, message):
         meterData = on_message.decoded[u'meterData']
         orderedMeterData = sorted(meterData, key = lambda k:k['timestampUtc'])
         for item in orderedMeterData:
-            logger.debug("timestamp: " + str(item['timestampUtc']))
-            logger.debug("pot. ativa: " + str(int(item['potenciaAtiva'])/100))
-            logger.debug("pot. reativa: " + str(int(item['potenciaReativa'])/100))
-            logger.debug("tensão: " + str(int(item['tensao'])/100))
-            params = urllib.parse.urlencode({'time': item['timestampUtc'], 'node': 'smartplug-' + str(localTomada), 'apikey': str(apiKey),'data': str(item)})
+            logger.debug("meterData" + json.dumps(json_strip(item), separators=(',', ':')))
+            params = urllib.parse.urlencode({'time': item['timestampUtc'], 'node': 'smartplug-' + str(localTomada), 'apikey': str(apiKey),'data': json.dumps(json_strip(item), separators=(',', ':'))})
             headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
             conn = http.client.HTTPConnection("rtsf-router.local", 80)
             conn.request("POST", "/emoncms/input/post/", params, headers)
             r1 = conn.getresponse()
             logger.debug("request status: " + str(r1.status) + ". Request reason: " + str(r1.reason) + ". Request response data: " + str(r1.read()))    
-        
+
 def on_error(ws, error):
     logger.error("Erro do websocket: %s",error)
 
 def on_close(ws):
     logger.info("On close function:")
-    
+
 def on_open(ws):
     global localTomada
     logger.info("Conexao WebSocket aberta!")
-    
+
 if __name__ == "__main__":
     websocket.enableTrace(False)
     setup_logging()
@@ -84,6 +98,6 @@ if __name__ == "__main__":
                                 on_close = on_close)
                 ws.on_open = on_open
                 ws.run_forever(ping_interval=3, ping_timeout=2)
-                time.sleep(5)    
+                time.sleep(5)
         except:
             logger.error("O programa foi interrompido definitivamente")
