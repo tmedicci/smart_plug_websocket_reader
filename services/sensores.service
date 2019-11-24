@@ -21,7 +21,7 @@
 # tail -f /var/log/sensores.log
 
 [Unit]
-Description=Websocket reader for the Smart Plug (Tiago Serrano's Smart Plug)
+Description=MQTT reader for the Smart Sensor (Murilo)
 Wants=feedwriter.service
 After=feedwriter.service
 

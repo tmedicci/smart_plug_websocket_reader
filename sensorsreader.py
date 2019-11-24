@@ -48,7 +48,8 @@ def on_message(client, userdata, message):
         jsonurl = '{"temperature":' + str(dataParsed["measure"][0]["temp"]["data"]) + ','
         jsonurl = jsonurl + ' "humidity":' + str(dataParsed["measure"][1]["umidade"]["data"]) + ','
         jsonurl = jsonurl + ' "people":' + str(dataParsed["measure"][2]["people"]["data"]) + ','
-        jsonurl = jsonurl + ' "door":' + str(dataParsed["measure"][3]["door"]["data"]) + '}'
+        jsonurl = jsonurl + ' "door":' + str(dataParsed["measure"][3]["door"]["data"]) + ','
+        jsonurl = jsonurl + ' "door1":' + str(dataParsed["measure"][4]["door1"]["data"]) + '}'
         requests.get('http://rtsf-router.local/emoncms/input/post',
             params={'node': node_name, 'fulljson': jsonurl, 'apikey': '2a47b32ebfab41e5a17127c9cf2ac61f'}
         )
